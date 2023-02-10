@@ -1,62 +1,21 @@
-# ING to QIF converter for KMyMoney
- Script that converts ING bank csv to qif format ready for consumption by KMyMoney, including a simple recurring transaction classification function
+# ENBD to QIF converter for KMyMoney
+ Script that converts Emirates NBD statements (2004 XLS files - xml based) to qif format ready for consumption by KMyMoney, including a simple recurring transaction classification function
 
-The Dutch ING bank allows for downloading transactions in a csv file. I use this script to convert the csv file to a qif file to manually import the transactions into KMyMoney, the awesome open source Personal Finance software. Try it out! 
+Emirates NBD allows for downloading transactions history in a xls file (xml based). I use this script to convert files to a qif file to manually import the transactions into KMyMoney, the awesome open source Personal Finance software. Try it out! 
 
 ## Automatic labelling of transactions
-Recurring transactions are recognised and automatically assigned a category based on a string which can be anywhere in the transaction. The list of strings and the accompanying Payee and Category for KMyMoney are listed in an .xlsx file for easy editing.
-
-## File handling
-Processed csv's are moved from the Downloads folder to a (configurable) archive folder. csv and qif files are renamed for better sorting.
+Recurring transactions are recognised and automatically assigned a category based on a string which can be anywhere in the transaction. The list of strings and the accompanying Payee and Category for KMyMoney are listed in an .csv file for easy editing. The format is:
+The string from statement,payee,category
 
 ## Run standalone
-The easiest way to use this script is to edit ing2qif.py itself and run it standalone:
-- Edit the ing2qif.py file to fill in the ING IBAN number and the KMyMoney account name.
-- Optionally change the folder in which the script looks for csv files.
-- Optionally edit the locations where the csv files will be archived and the qif files created.
-- Edit the bankstatementmapping.xlsx file to automatically categorise transactions or set variable to False to skip the mapping.
-- Run the ing2qif.py file.
+The easiest way to use this script is to edit enbd2qif.py itself and run it standalone:
+- copy the statement and bankstatementmapping.csv to the script folder 
+- Edit the enbd2qif.py file to fill in the enbd IBAN number/credit card name and the KMyMoney account name.
+- you can add text to list (text_to_remove), these will be removed from descrption before writing unkown payee to text file
+- Run the enbd2qif.py file.
+- the script will generate text file with unmapped payees, edit the bankstatementmapping.csv file to automatically categorise transactions or set variable to False to skip the mapping.
+- rerun the script
 - Import the resulting qif file in KMyMoney.
-
-## Run as library
-When you have more than 1 ING account, you could create scripts per account that import ing2qif and change only the variables. Personally I created several sheets in the xlsx for the different accounts. The scripts 'proces-{myaccount}.py' then take the following form:
-
-```
-import ing2qif as iq
-
-iq.ING_IBAN = 'NL@@INGB@@@@@@@@@@'
-iq.MAP_SHEET = 'Different sheet name'
-iq.KMYMONEYACCOUNT = 'Different account name'
-
-iq.run()
-```
-
-## Run script from start menu in Windows 10 with (mini)conda environment
-In my personal usecase the csv file is downloaded to the downloads folder, I run the script and import the resulting qif manually in KMyMoney. To run the script I open a Conda-enabled shell, navigate to the script folder and run the script. To simplify running the script I added a .bat file to the folder with the script with the following content:
-
-```
-@echo off
-CALL C:\Users\<username>\Miniconda3\Scripts\activate.bat
-python proces-<myaccount>.py
-conda deactivate
-```
-
-Then I made a copy of the 'Anaconda Prompt' shortcut in the Windows Start Menu folder which points to this .bat file instead of the activate.bat and changed the working folder field.
-
-## Rerun after updating the mapping file
-To rerun the conversion of csv file to qif file, for example after updating the bankstatementmapping file, use the run_redo() function. This function assumes the csv is already moved and renamed and will search the csv archive folder for the latest file for this bankaccount. My script to use this function looks like:
-
-```
-import ing2qif as iq
-
-iq.ING_IBAN = 'NL@@INGB@@@@@@@@@@'
-iq.MAP_SHEET = 'Different sheet name'
-iq.KMYMONEYACCOUNT = 'Different account name'
-
-iq.run_redo()
-```
-
-
 
 ## License
 This script is provided under the MIT License. Please see the license file for more details.
